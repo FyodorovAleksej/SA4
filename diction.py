@@ -1,8 +1,21 @@
+import re
+import pymorphy2
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 import random as rdm
 import os
+
+def f_tokenizer(s):
+    words = re.split("[\\s,.!?()\\[\\]\"\'<>]", s)
+    resultWords = []
+    for word in words:
+        morphem = morph.parse(word.replace('.',''))
+        if len(morphem) > 0:
+            wrd = morphem[0]
+            if wrd.tag.POS not in ('NUMR','PREP','CONJ','PRCL','INTJ'):
+                resultWords.append(wrd.normal_form)
+    return resultWords
 
 def fillPoint(path):
     file = open(path, "r+")
@@ -11,10 +24,12 @@ def fillPoint(path):
     result = []
     for i in range(0, CLUSTERS):
         file = open(dictions[i], "r+")
-        words = file.readlines()
+        words = f_tokenizer(file.read())
         file.close()
         sumWord = 0
         for word in words:
+            if (text.count(word) > 0):
+                print(str(i) + " - " + word)
             sumWord += text.count(word)
         result.append(sumWord)
     return tuple(result)
@@ -49,12 +64,13 @@ def equalator(point1, point2, accur):
     return accuracyEqual(point1[0], point2[0], accur) and accuracyEqual(point1[1], point2[1], accur) and accuracyEqual(point1[2], point2[2], accur) and accuracyEqual(point1[3], point2[3], accur)
 
 if __name__=="__main__":
+    print("start")
+    morph = pymorphy2.MorphAnalyzer()
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    dictions = [os.getcwd() + "\\input\\diction" + str(i) + ".txt" for i in range(1, 5)]
-    texts = [os.getcwd() + "\\text\\text" + str(i) + ".txt" for i in range(1, 21)]
-
+    dictions = [os.getcwd() + "\\input\\" + str(name) + "Diction.txt" for name in ["game", "green", "it", "med"]]
+    texts = [os.getcwd() + "\\text\\text-" + str(i) + ".txt" for i in range(1, 5)]
 
     points = []
     CLUSTERS = 4

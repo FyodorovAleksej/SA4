@@ -82,6 +82,9 @@ while flag:
     flag = not equalList(kClusters, oldkClusters, ACCUR)
     oldkClusters = kClusters.copy()
     print(kClusters)
+    if flag:
+        for clusterList in clusterValues:
+            clusterList.clear()
 
 ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
